@@ -7,7 +7,7 @@ ehthumbs.db
 compass_app_log.txt
 *.php-*
 *.css-*
-
+back/
 # Folder config file
 Desktop.ini
 
