@@ -1,0 +1,18 @@
+@import url("../flatsome/css/foundation.css");
+/*
+Theme Name: Reach Flatsome Child 
+Description: This is a child theme for Flatsome for Reach Maein
+Author: Reach Maine
+Author URI: http: //www.uxthemes.com/
+Template: flatsome
+Version: 1.8
+*/
+/* Colors ---------------------------------------------- */
+/* Typography ------------------------------------------ */
+/* =Theme customization starts here */
+.from_the_blog_comments {
+  display: none;
+  visibility: hidden; }
+
+aside.widget.widget_recent_entries li {
+  padding-bottom: 15px; }
