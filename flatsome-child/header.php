@@ -1,27 +1,17 @@
-<?php
-global $woo_options;
-global $woocommerce;
-global $flatsome_opt;
-?>
 <!DOCTYPE html>
+<?php /* mods
+ *  23Aug16 zig - re-fresh header.php from flatsome V2.9.6
+ *              - put GTM function after body tag.
+ */ ?>
+<?php global $woo_options, $woocommerce, $flatsome_opt;?>
 <!--[if lte IE 9 ]><html class="ie lt-ie9" <?php language_attributes(); ?>> <![endif]-->
 <!--[if (gte IE 9)|!(IE)]><!--><html <?php language_attributes(); ?>> <!--<![endif]-->
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-	<title><?php wp_title( '|', true, 'right' ); ?></title>
-
 	<link rel="profile" href="http://gmpg.org/xfn/11" />
 	<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
-
-	<!-- Custom favicon-->
-	<link rel="shortcut icon" href="<?php if ($flatsome_opt['site_favicon']) { echo $flatsome_opt['site_favicon']; ?>
-	<?php } else { ?><?php echo get_template_directory_uri(); ?>/favicon.png<?php } ?>" />
-
-	<!-- Retina/iOS favicon -->
-	<link rel="apple-touch-icon-precomposed" href="<?php if ($flatsome_opt['site_favicon_large']) { echo $flatsome_opt['site_favicon_large']; ?>
-	<?php } else { ?><?php echo get_template_directory_uri(); ?>/apple-touch-icon-precomposed.png<?php } ?>" />
-
+	
 	<?php wp_head(); ?>
 </head>
 
@@ -33,7 +23,6 @@ if($flatsome_opt['html_intro'] && is_front_page()) echo '<div class="home-intro"
 
 	<div id="wrapper"<?php if($flatsome_opt['box_shadow']) echo ' class="box-shadow"';?>>
 		<div class="header-wrapper before-sticky">
-		<?php do_action( 'before' ); ?>
 		<?php if(!isset($flatsome_opt['topbar_show']) || $flatsome_opt['topbar_show']){ ?>
 		<div id="top-bar">
 			<div class="row">
@@ -67,23 +56,35 @@ if($flatsome_opt['html_intro'] && is_front_page()) echo '<div class="home-intro"
 										</a>
 										<div class="nav-dropdown">
 											<ul>
-											<?php if ( has_nav_menu( 'my_account' ) ) : ?>
+											<?php if ( has_nav_menu( 'my_account' ) ) { ?>
 											<?php  
-											wp_nav_menu(array(
-												'theme_location' => 'my_account',
-												'container'       => false,
-												'items_wrap'      => '%3$s',
-												'depth'           => 0,
-											));
+												wp_nav_menu(array(
+													'theme_location' => 'my_account',
+													'container'       => false,
+													'items_wrap'      => '%3$s',
+													'depth'           => 0,
+												));
 											?>
-					                        <?php else: ?>
-					                            <li>Define your My Account dropdown menu in <b>Apperance > Menus</b></li>
-					                        <?php endif; ?>	
+											<?php } else if(!function_exists('wc_get_account_menu_items')) { ?>
+							                 <li>Define your My Account dropdown menu in <b>Appearance > Menus</b></li>
+					                        <?php } ?>
+					                        <?php if(function_exists('wc_get_account_menu_items') && $flatsome_opt['wc_account_links']){ ?>
+											    <?php foreach ( wc_get_account_menu_items() as $endpoint => $label ) : ?>
+													<li>
+														<a href="<?php echo esc_url( wc_get_endpoint_url( $endpoint, ' ', wc_get_page_permalink( 'myaccount' )) ); ?>"><?php echo esc_html( $label ); ?></a>
+													</li>
+												<?php endforeach; ?>
+											<?php } ?>
 											</ul>
 									</div><!-- end account dropdown -->
 								
 										<?php } else { ?>
-										<a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ); ?>" class="nav-top-link nav-top-not-logged-in"><?php _e('Login', 'woocommerce'); ?></a>
+												<a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ); ?>"
+												class="nav-top-link nav-top-not-logged-in"
+												<?php if($flatsome_opt['account_login_style'] == 'lightbox'){
+													echo 'data-lightbox="#login-lightbox"';
+												}?>>
+												<?php _e('Login', 'woocommerce'); ?></a>
 										<?php } ?>						
 									</li>
 									<?php } // end My account dropdown ?>
@@ -181,7 +182,7 @@ if($flatsome_opt['html_intro'] && is_front_page()) echo '<div class="home-intro"
 								<?php } ?>
 
 		                        <?php else: ?>
-		                            <li>Define your main navigation in <b>Apperance > Menus</b></li>
+		                            <li>Define your main navigation in <b>Appearance > Menus</b></li>
 		                        <?php endif; ?>								
 							</ul>
 						<?php } else if($flatsome_opt['nav_position'] == 'bottom' || $flatsome_opt['nav_position'] == 'bottom_center') { ?>
@@ -289,7 +290,7 @@ if($flatsome_opt['html_intro'] && is_front_page()) echo '<div class="home-intro"
 								</a>
 								<div class="nav-dropdown">
 									<ul>
-									<?php if ( has_nav_menu( 'my_account' ) ) : ?>
+									<?php if ( has_nav_menu( 'my_account' ) ) { ?>
 									<?php  
 									wp_nav_menu(array(
 										'theme_location' => 'my_account',
@@ -298,14 +299,26 @@ if($flatsome_opt['html_intro'] && is_front_page()) echo '<div class="home-intro"
 										'depth'           => 0,
 									));
 									?>
-			                        <?php else: ?>
-			                            <li>Define your My Account dropdown menu in <b>Apperance > Menus</b></li>
-			                        <?php endif; ?>	
+									<?php } else if(!function_exists('wc_get_account_menu_items')) { ?>
+					                 <li>Define your My Account dropdown menu in <b>Appearance > Menus</b></li>
+			                        <?php } ?>
+			                        <?php if(function_exists('wc_get_account_menu_items') && $flatsome_opt['wc_account_links']){ ?>
+									    <?php foreach ( wc_get_account_menu_items() as $endpoint => $label ) : ?>
+											<li class="<?php echo wc_get_account_menu_item_classes( $endpoint ); ?>">
+												<a href="<?php echo esc_url( wc_get_endpoint_url( $endpoint, ' ', wc_get_page_permalink( 'myaccount' )) ); ?>"><?php echo esc_html( $label ); ?></a>
+											</li>
+										<?php endforeach; ?>
+									<?php } ?>
 									</ul>
 								</div><!-- end account dropdown -->
 								
 							<?php } else { ?>
-							<a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ); ?>" class="nav-top-link nav-top-not-logged-in"><?php _e('Login', 'woocommerce'); ?></a>
+							<a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ); ?>"
+								class="nav-top-link nav-top-not-logged-in"
+								<?php if($flatsome_opt['account_login_style'] == 'lightbox'){
+									echo 'data-lightbox="#login-lightbox"';
+								}?>>
+								<?php _e('Login', 'woocommerce'); ?></a>
 							<?php
 						}
 						?>						
@@ -318,7 +331,7 @@ if($flatsome_opt['html_intro'] && is_front_page()) echo '<div class="home-intro"
 					<?php if(function_exists('wc_print_notices')) { ?>
 					<li class="mini-cart <?php if($flatsome_opt['show_cart'] == 'top_bar') echo 'hide-for-medium'; ?>">
 						<div class="cart-inner">
-							<?php // Edit this content in inc/template-tags.php. Its gets relpaced with Ajax! ?>
+							<?php // Edit this content in inc/woocommerce/template-tags-global.php. Its gets relpaced with Ajax! ?>
 							<a href="<?php echo esc_url( $woocommerce->cart->get_cart_url() ); ?>" class="cart-link">
 								<strong class="cart-name hide-for-small"><?php _e('Cart', 'woocommerce'); ?></strong> 
 								<span class="cart-price hide-for-small">/ <?php echo $woocommerce->cart->get_cart_subtotal(); ?></span> 
@@ -327,7 +340,7 @@ if($flatsome_opt['html_intro'] && is_front_page()) echo '<div class="home-intro"
 				                        <?php if ($flatsome_opt['custom_cart_icon']){ ?> 
 				                        <div class="custom-cart-inner">
 					                        <div class="custom-cart-count"><?php echo $woocommerce->cart->cart_contents_count; ?></div>
-					                        <img class="custom-cart-icon" src="<?php echo $flatsome_opt['custom_cart_icon']?>"/> 
+					                        <img class="custom-cart-icon" alt="<?php _e('Cart', 'woocommerce'); ?>" src="<?php echo $flatsome_opt['custom_cart_icon']?>"/> 
 				                        </div><!-- .custom-cart-inner -->
 				                        <?php } else { ?> 
 				                         <strong><?php echo $woocommerce->cart->cart_contents_count; ?></strong>
@@ -342,7 +355,7 @@ if($flatsome_opt['html_intro'] && is_front_page()) echo '<div class="home-intro"
 										echo '<p class="empty">'.__('No products in the cart.','woocommerce').'</p>';
 										?> 
 									<?php } else { //add a spinner ?> 
-										<div class="ux-loading"><i></i><i></i><i></i><i></i></div>
+										<div class="ux-loading"></div>
 									<?php } ?>
 									</div><!-- nav-dropdown-innner -->
 							</div><!-- .nav-dropdown -->
@@ -397,7 +410,7 @@ if($flatsome_opt['html_intro'] && is_front_page()) echo '<div class="home-intro"
 				</li><!-- .search-dropdown -->
 				<?php } ?>
               <?php else: ?>
-                  <li>Define your main navigation in <b>Apperance > Menus</b></li>
+                  <li>Define your main navigation in <b>Appearance > Menus</b></li>
               <?php endif; ?>								
 		</ul>
 		<?php if($flatsome_opt['nav_position'] == 'bottom') { ?>
